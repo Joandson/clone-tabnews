@@ -1,7 +1,8 @@
 import { Client } from "pg";
 
 async function query(queryObject) {
-  const dbClient = new Client({
+  // A variável 'client' recebe a nova instância do Client.
+  const client = new Client({
     host: process.env.POSTGRES_HOST,
     port: process.env.POSTGRES_PORT,
     user: process.env.POSTGRES_USER,
@@ -9,7 +10,7 @@ async function query(queryObject) {
     password: process.env.POSTGRES_PASSWORD,
     ssl: getSSLValues(),
   });
-  let client;
+
   try {
     await client.connect();
     const result = await client.query(queryObject);
@@ -22,6 +23,7 @@ async function query(queryObject) {
   }
 }
 
+// A função getNewClient e a exportação permanecem as mesmas.
 async function getNewClient() {
   const client = new Client({
     host: process.env.POSTGRES_HOST,
@@ -38,6 +40,7 @@ async function getNewClient() {
 
 export default {
   query: query,
+  getNewClient: getNewClient, // Adicionado para exportar a função se necessário
 };
 
 function getSSLValues() {
@@ -47,5 +50,5 @@ function getSSLValues() {
     };
   }
 
-  return process.env.NODE_ENV === "production" ? true : false;
-}
+  // Simplificado para retornar o booleano diretamente
+  return process.env.NODE_ENV === "production";
