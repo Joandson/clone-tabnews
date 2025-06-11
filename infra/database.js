@@ -1,7 +1,6 @@
 import { Client } from "pg";
 
 async function query(queryObject) {
-  // A variável 'client' recebe a nova instância do Client.
   const client = new Client({
     host: process.env.POSTGRES_HOST,
     port: process.env.POSTGRES_PORT,
@@ -23,7 +22,6 @@ async function query(queryObject) {
   }
 }
 
-// A função getNewClient e a exportação permanecem as mesmas.
 async function getNewClient() {
   const client = new Client({
     host: process.env.POSTGRES_HOST,
@@ -40,7 +38,7 @@ async function getNewClient() {
 
 export default {
   query: query,
-  getNewClient: getNewClient, // Adicionado para exportar a função se necessário
+  getNewClient: getNewClient,
 };
 
 function getSSLValues() {
@@ -49,6 +47,5 @@ function getSSLValues() {
       ca: process.env.POSTGRES_CA,
     };
   }
-
-  // Simplificado para retornar o booleano diretamente
-  return process.env.NODE_ENV === "production";
+}
+return process.env.NODE_ENV === "production";
