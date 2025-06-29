@@ -18,6 +18,10 @@ async function waitForAllServices() {
   }
 }
 
-export default {
+// Crie uma constante para o objeto que será exportado
+const orchestrator = {
   waitForAllServices,
 };
+
+// Exporte essa constante
+export default orchestrator;

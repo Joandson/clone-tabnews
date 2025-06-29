@@ -2,6 +2,8 @@
 
 exports.shorthands = undefined;
 
-exports.up = (pgm) => {};
+// Remova o parâmetro 'pgm' se ele não for usado
+exports.up = () => {};
 
-exports.down = (pgm) => {};
+// Faça o mesmo para a função 'down'
+exports.down = () => {};
