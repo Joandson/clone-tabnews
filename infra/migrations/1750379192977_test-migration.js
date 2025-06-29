@@ -1,9 +1,8 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable camelcase */
 
 exports.shorthands = undefined;
 
-// Remova o parâmetro 'pgm' se ele não for usado
-exports.up = () => {};
+exports.up = (pgm) => {};
 
-// Faça o mesmo para a função 'down'
-exports.down = () => {};
+exports.down = (pgm) => {};
