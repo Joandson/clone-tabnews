@@ -1,7 +1,5 @@
 import { Client } from "pg";
 
-// MANTIDO: Versão mais explícita e correta da função.
-// A outra versão foi REMOVIDA.
 function getSSLValues() {
   if (process.env.POSTGRES_CA) {
     return {
@@ -45,10 +43,10 @@ async function query(queryObject) {
     }
   }
 }
-
-// MANTIDO: A exportação estava correta, mas foi movida para o final
-// por uma questão de organização do código.
-export default {
+const database = {
   query,
   getNewClient,
 };
+
+// Exporte a constante
+export default database;
