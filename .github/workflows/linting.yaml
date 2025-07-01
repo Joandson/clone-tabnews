@@ -1,47 +1,48 @@
-name: linting
+name: Linting e Testes
 
-on: pull_request
+on:
+  pull_request:
 
 jobs:
-  prettier:
-    name: Prettier
+  lint:
+    name: ESLint & Prettier
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: 1. Checkout do Repositório
+        uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v4
+      - name: 2. Configurar o Node.js
+        uses: actions/setup-node@v4
         with:
           node-version: "lts/hydrogen"
+          cache: "npm" # Adiciona cache para acelerar as instalações
 
-      - run: npm ci
+      - name: 3. Instalar Dependências
+        run: npm ci
 
-      - run: npm run lint:prettier:check
-  eslint:
-    name: Eslint
+      - name: 4. Executar Verificação do Prettier
+        run: npm run lint:prettier:check
+
+      - name: 5. Executar Verificação do ESLint
+        run: npm run lint:eslint:check
+
+  commitlint:
+    name: Commitlint
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: 1. Checkout do Repositório
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Necessário para o commitlint acessar o histórico de commits
 
-      - uses: actions/setup-node@v4
+      - name: 2. Configurar o Node.js
+        uses: actions/setup-node@v4
         with:
           node-version: "lts/hydrogen"
+          cache: "npm"
 
-      - run: npm ci
+      - name: 3. Instalar Dependências
+        run: npm ci
 
-      - run: npm run lint:eslint:check
-
-commitlint:
-  name: commitlint
-  runs-on: ubuntu-latest
-  steps:
-    - uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
-
-    - uses: actions/setup-node@v4
-      with:
-        node-version: "lts/hydrogen"
-
-    - run: npm ci
-
-    - run: npx commitlint --from ${{ github.event.pull_request.head.sha }}~${{ github.event.pull_request.commits }} --to ${{ github.event.pull_request.head.sha }} --verbose
+      - name: 4. Validar Mensagens de Commit
+        run: npx commitlint --from ${{ github.event.pull_request.base.sha }} --to ${{ github.event.pull_request.head.sha }} --verbose
