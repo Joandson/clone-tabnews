@@ -1,0 +1,11 @@
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
+
+echo "🔍 Verificando por segredos nos arquivos com Secretlint..."
+
+# Executa o secretlint apenas nos arquivos que estão no "stage" do Git.
+# Se um segredo for encontrado, o comando falhará e o commit será abortado.
+npx secretlint --secretlintrc .secretlintrc.json $(git diff --cached --name-only)
+
+# Se o comando acima passar, a mensagem de sucesso será exibida.
+echo "✅ Verificação de segredos concluída com sucesso."
