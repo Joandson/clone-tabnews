@@ -1,5 +1,6 @@
 import migrationRunner from "node-pg-migrate";
-import { Resolve } from "node:path";
+// Corrigido: O correto é importar "path" e usar "resolve" a partir dele.
+import path from "node:path";
 import database from "infra/database.js";
 
 export default async function migrations(request, response) {
@@ -18,7 +19,8 @@ export default async function migrations(request, response) {
     const defaultMigrationOptions = {
       dbClient: dbClient,
       dryRun: true,
-      dir: Resolve("infra", "migrations"),
+      // Corrigido: Usando "path.resolve"
+      dir: path.resolve("infra", "migrations"),
       direction: "up",
       verbose: true,
       migrationsTable: "pgmigrations",
@@ -43,8 +45,14 @@ export default async function migrations(request, response) {
     }
   } catch (error) {
     console.error(error);
-    throw error;
+    // ALTERAÇÃO 1: Em vez de "throw", envie uma resposta de erro controlada.
+    return response.status(500).json({
+      error: "An error occurred during the migrations.",
+    });
   } finally {
-    await dbClient.end();
+    // ALTERAÇÃO 2: Verifique se o cliente existe antes de fechar a conexão.
+    if (dbClient) {
+      await dbClient.end();
+    }
   }
 }
