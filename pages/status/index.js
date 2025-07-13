@@ -29,8 +29,8 @@ function UpdatedAt() {
   );
 }
 
-function SlowQueriesList({ queries }) {
-  // Se a lista de queries não existir ou estiver vazia, mostra uma mensagem positiva.
+// CORREÇÃO 1: Adicionamos 'version' como uma propriedade (prop)
+function SlowQueriesList({ queries, version }) {
   if (!queries || queries.length === 0) {
     return (
       <div
@@ -51,10 +51,8 @@ function SlowQueriesList({ queries }) {
     <div style={{ marginTop: "15px" }}>
       <h4>Consultas Mais Lentas em Execução:</h4>
       <ul style={{ listStyle: "none", padding: 0 }}>
-        {/* Itera sobre a lista de queries e cria um item para cada uma */}
         {queries.map((q) => {
-          // Define a cor da duração com base no quão lenta é a query
-          const durationColor = q.duration_seconds > 30 ? "#d32f2f" : "#f57c00"; // Vermelho se > 30s, Laranja se não
+          const durationColor = q.duration_seconds > 30 ? "#d32f2f" : "#f57c00";
 
           return (
             <li
@@ -67,7 +65,8 @@ function SlowQueriesList({ queries }) {
               }}
             >
               <div>
-                <div>Versão: {data.dependencies.database.version}</div>
+                {/* CORREÇÃO 1: Usamos a prop 'version' em vez de 'data' */}
+                <div>Versão: {version}</div>
                 <strong>Duração:</strong>{" "}
                 <span style={{ color: durationColor, fontWeight: "bold" }}>
                   {q.duration_seconds} segundos
@@ -101,10 +100,10 @@ function DatabaseStatus({ dbData }) {
 
   const usageColor = !isNaN(usagePercentage)
     ? usagePercentage > 90
-      ? "red"
+      ? "#d32f2f" // Vermelho
       : usagePercentage > 75
-        ? "orange"
-        : "green"
+        ? "#f57c00" // Laranja
+        : "#4caf50" // Verde
     : "grey";
 
   return (
@@ -119,28 +118,60 @@ function DatabaseStatus({ dbData }) {
       <h3>Banco de Dados</h3>
       <p>Versão: {dbData.version ?? "N/D"}</p>
 
-      {/* Informações de Conexão */}
       <p>
         Conexões Abertas: <strong>{dbData.opened_connections ?? "?"}</strong> /{" "}
         {dbData.max_connections ?? "?"}
       </p>
-      <div>
+
+      {/* CORREÇÃO 2: Adicionamos uma barra de progresso para usar 'usageColor' */}
+      <div
+        style={{
+          backgroundColor: "#e0e0e0",
+          borderRadius: "4px",
+          overflow: "hidden",
+          marginTop: "5px",
+        }}
+      >
+        <div
+          style={{
+            width: isNaN(usagePercentage) ? "100%" : `${usagePercentage}%`,
+            backgroundColor: usageColor,
+            height: "20px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            color: "white",
+            fontWeight: "bold",
+            fontSize: "12px",
+          }}
+        >
+          {!isNaN(usagePercentage) && `${usagePercentage.toFixed(1)}%`}
+        </div>
+      </div>
+
+      <div style={{ marginTop: "16px" }}>
         <p>
           Consultas Ativas no Momento:{" "}
           <strong>{dbData.queries?.active_count ?? "N/D"}</strong>
         </p>
-        <SlowQueriesList queries={dbData.queries?.slowest} />
+        {/* CORREÇÃO 1: Passamos a versão do DB como prop para o componente filho */}
+        <SlowQueriesList
+          queries={dbData.queries?.slowest}
+          version={dbData.version}
+        />
       </div>
     </div>
   );
 }
+
 export default function StatusPage() {
   const { data, error, isLoading } = useSWR("/api/v1/status", fetchAPI);
 
   if (error)
     return (
-      <div style={{ color: "red" }}>
-        <h1>Erro!</h1>
+      <div style={{ color: "red", padding: "20px" }}>
+        <h1>Erro ao carregar o status.</h1>
+        <p>{error.message}</p>
       </div>
     );
   if (isLoading)
