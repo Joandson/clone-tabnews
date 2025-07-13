@@ -67,6 +67,7 @@ function SlowQueriesList({ queries }) {
               }}
             >
               <div>
+                <div>Versão: {data.dependencies.database.version}</div>
                 <strong>Duração:</strong>{" "}
                 <span style={{ color: durationColor, fontWeight: "bold" }}>
                   {q.duration_seconds} segundos
